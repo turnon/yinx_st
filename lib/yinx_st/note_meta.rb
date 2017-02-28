@@ -26,7 +26,7 @@ class Yinx::NoteMeta
   end
 
   def moved_book?
-    prev_version and prev_version.book != self.book and prev_version.stack != self.stack
+    prev_version and (prev_version.book != self.book or prev_version.stack != self.stack)
   end
 
   def changed_tags?
