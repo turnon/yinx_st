@@ -18,7 +18,7 @@ module YinxSt
       batches = Batches.new n
       duration = "最近#{n}日"
 
-      chart = MyChart.js do
+      @chart = MyChart.js do
         material batches.all_notes
         material batches.unwind_tags, name: :unwind_tags
 
@@ -70,12 +70,13 @@ module YinxSt
 
       end
 
-      generate_html chart
-
+      self
     end
 
-    def generate_html chart
-      template = File.read File.expand_path('../yinx_st/chart.erb', __FILE__)
+    attr_reader :chart
+
+    def generate_html(erb_file=File.expand_path('../yinx_st/chart.erb', __FILE__))
+      template = File.read erb_file
       html = ERB.new(template).result(binding)
     end
   end
