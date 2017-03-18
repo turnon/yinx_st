@@ -15,9 +15,14 @@ class Yinx::NoteMeta
     created_at.between? (dump_at - 1.day), dump_at
   end
 
+  def deleted_today?
+    batches.of_guid(guid).first == self and dump_id != batches.latest_id
+  end
+
   def status
     return :created if created_today?
     return :updated if updated_today?
+    return :deleted if deleted_today?
     :remained
   end
 

@@ -31,7 +31,7 @@ module YinxSt
         end
 
         select :changed_content do |note|
-          note.status == :created or note.status == :updated
+          note.status != :remained
         end
 
         select :moved_book do |note|
@@ -54,7 +54,7 @@ module YinxSt
         end
 
         plainBar :dump_day, name: "#{duration}总数变化", w: 1000, h:240, asc: :key, last: n
-        line :dump_day, :status, name: "#{duration}新建/修改", from: :changed_content, w: 1000, h:240, asc: :key, keys: batches.time_line, last: n
+        line :dump_day, :status, name: "#{duration}新建/修改/删除", from: :changed_content, w: 1000, h:240, asc: :key, keys: batches.time_line, last: n
         line :dump_day, name: "#{duration}移动笔记本", from: :moved_book, w: 1000, h:240, asc: :key, keys: batches.time_line, last: n
         line :dump_day, name: "#{duration}更改标签", from: :changed_tags, w: 1000, h:240, asc: :key, keys: batches.time_line, last: n
 
