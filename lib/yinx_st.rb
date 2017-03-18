@@ -15,7 +15,7 @@ module YinxSt
     end
 
     def last_n_days n
-      batches = Batches.new n
+      batches = Batches.new(n + 1)
       duration = "最近#{n}日"
 
       @chart = MyChart.js do
@@ -53,20 +53,20 @@ module YinxSt
           note.tags.count
         end
 
-        plainBar :dump_day, name: "#{duration}总数变化", w: 1000, h:240, asc: :key
-        line :dump_day, :status, name: "#{duration}新建/修改", from: :changed_content, w: 1000, h:240, asc: :key, keys: batches.time_line
-        line :dump_day, name: "#{duration}移动笔记本", from: :moved_book, w: 1000, h:240, asc: :key, keys: batches.time_line
-        line :dump_day, name: "#{duration}更改标签", from: :changed_tags, w: 1000, h:240, asc: :key, keys: batches.time_line
+        plainBar :dump_day, name: "#{duration}总数变化", w: 1000, h:240, asc: :key, last: n
+        line :dump_day, :status, name: "#{duration}新建/修改", from: :changed_content, w: 1000, h:240, asc: :key, keys: batches.time_line, last: n
+        line :dump_day, name: "#{duration}移动笔记本", from: :moved_book, w: 1000, h:240, asc: :key, keys: batches.time_line, last: n
+        line :dump_day, name: "#{duration}更改标签", from: :changed_tags, w: 1000, h:240, asc: :key, keys: batches.time_line, last: n
 
         bar :stack_book, name: '目前最大的10个笔记本', from: :yesterday, w:1400 ,h: 540, desc: :count, first: 10
-        line :dump_day, :stack_book, name: "#{duration}笔记本体积变化", w: 1200, h:540, asc: :key, keys: batches.time_line
+        line :dump_day, :stack_book, name: "#{duration}笔记本体积变化", w: 1200, h:540, asc: :key, keys: batches.time_line, last: n
 
         bar :stack, name: '目前最大的10个笔记本组', from: :yesterday, w:1400 ,h: 240, desc: :count, first: 10
-        line :dump_day, :stack, name: "#{duration}笔记本组体积变化", w: 1000, h:340, asc: :key, keys: batches.time_line
+        line :dump_day, :stack, name: "#{duration}笔记本组体积变化", w: 1000, h:340, asc: :key, keys: batches.time_line, last: n
 
         pie :tags, name: '目前使用最多的15个标签', from: :yesterday__from__unwind_tags, w:1400 ,h: 340, desc: :count, first: 15
         bar :number_of_tags, name: '目前每篇笔记的标签数', from: :yesterday, w: 800, h: 240, asc: :key
-        line :dump_day, :tags, name: "#{duration}标签数变化", from: :unwind_tags, w: 1400, h:740, asc: :key, keys: batches.time_line
+        line :dump_day, :tags, name: "#{duration}标签数变化", from: :unwind_tags, w: 1400, h:740, asc: :key, keys: batches.time_line, last: n
 
       end
 
