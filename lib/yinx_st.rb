@@ -7,14 +7,48 @@ require 'time_seq'
 require 'yinx_st/note_meta'
 require 'yinx_st/batches'
 
+require 'my_chartkick'
+
+class Yinx::NoteMeta
+  def stack_book
+    st = stack.nil? ? '' : "#{stack}/"
+    "#{st}#{book}"
+  end
+end
+
 module YinxSt
   class << self
+
+    attr_reader :chart
+
     def fetch *args
       Yinx::SQL.connect(*args)
       self
     end
 
     def last_n_days n
+      batches = Batches.new(n + 1)
+
+      time_line = batches.time_line
+
+      all = batches.all_notes
+      yesterday = all.select{|note| note.dump_id == batches.latest_id}
+      changed_content = all.select{|note| note.status != :remained}
+      moved_book = all.select &:moved_book?
+      changed_tags = all.select &:changed_tags?
+
+      @chart = MyChartkick.sample do |s|
+        s.my_line_chart all, x: :dump_day, min: 2400, asc: :key, id: '1'
+        s.my_line_chart changed_content, x: :dump_day, y: :status, keys: time_line, asc: :key, id: '2'
+        s.my_line_chart moved_book, x: :dump_day, keys: time_line, asc: :key, id: '3'
+        s.my_line_chart changed_tags, x: :dump_day, keys: time_line, asc: :key, id: '4'
+        s.my_column_chart yesterday, x: :stack_book, desc: :count, id: '5'
+      end
+
+      self
+    end
+
+    def _last_n_days n
       batches = Batches.new(n + 1)
       duration = "最近#{n}日"
 
