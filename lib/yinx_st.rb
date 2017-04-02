@@ -14,6 +14,14 @@ class Yinx::NoteMeta
     st = stack.nil? ? '' : "#{stack}/"
     "#{st}#{book}"
   end
+
+  def stack_name
+    stack ? stack : 'No Stack'
+  end
+
+  def tags_count
+    tags.count
+  end
 end
 
 module YinxSt
@@ -32,17 +40,30 @@ module YinxSt
       time_line = batches.time_line
 
       all = batches.all_notes
+      unwind_tags = batches.unwind_tags
+
       yesterday = all.select{|note| note.dump_id == batches.latest_id}
+      yesterday_unwind_tags = unwind_tags.select{|note| note.dump_id == batches.latest_id}
+
       changed_content = all.select{|note| note.status != :remained}
       moved_book = all.select &:moved_book?
       changed_tags = all.select &:changed_tags?
 
       @chart = MyChartkick.sample do |s|
-        s.my_line_chart all, x: :dump_day, min: 2400, asc: :key, id: '1'
-        s.my_line_chart changed_content, x: :dump_day, y: :status, keys: time_line, asc: :key, id: '2'
-        s.my_line_chart moved_book, x: :dump_day, keys: time_line, asc: :key, id: '3'
-        s.my_line_chart changed_tags, x: :dump_day, keys: time_line, asc: :key, id: '4'
-        s.my_column_chart yesterday, x: :stack_book, desc: :count, id: '5'
+        s.my_line_chart all, x: :dump_day, min: 2400, asc: :key, last: n, id: '1'
+
+        s.my_line_chart changed_content, x: :dump_day, y: :status, keys: time_line, asc: :key, last: n, id: '2'
+        s.my_line_chart moved_book, x: :dump_day, keys: time_line, asc: :key, last: n, id: '3'
+        s.my_line_chart changed_tags, x: :dump_day, keys: time_line, asc: :key, last: n, id: '4'
+
+        s.my_column_chart yesterday, x: :stack_book, desc: :count, first: 10, id: '5'
+        s.my_line_chart all, x: :dump_day, y: :stack_book, asc: :key, height: '540px', last: n, id: '6'
+        s.my_column_chart yesterday, x: :stack_name, desc: :count, first: 10, id: '7'
+        s.my_line_chart all, x: :dump_day, y: :stack_name, asc: :key, last: n, id: '8'
+
+        s.my_pie_chart yesterday_unwind_tags, x: :tags, desc: :count, first: 15, id: '9'
+        s.my_column_chart yesterday, x: :tags_count, asc: :key, id: '10'
+        s.my_line_chart unwind_tags, x: :dump_day, y: :tags, asc: :key, height: '740px', last: n, id: '11'
       end
 
       self
