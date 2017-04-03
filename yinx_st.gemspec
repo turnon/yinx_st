@@ -26,6 +26,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "yinx", "~> 0.1.0"
   spec.add_dependency "yinx_sql", "~> 0.1.2"
-  spec.add_dependency "my_chart", "~> 0.1.0"
+  spec.add_dependency "my_chartkick", "~> 0.1.0"
   spec.add_dependency "time_seq", "~> 0.1.0"
 end

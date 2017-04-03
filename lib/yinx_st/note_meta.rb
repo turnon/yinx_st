@@ -38,4 +38,16 @@ class Yinx::NoteMeta
     prev_version and prev_version.tags.sort != self.tags.sort
   end
 
+  def stack_book
+    st = stack.nil? ? '' : "#{stack}/"
+    "#{st}#{book}"
+  end
+
+  def stack_name
+    stack ? stack : 'No Stack'
+  end
+
+  def tags_count
+    tags.count
+  end
 end
