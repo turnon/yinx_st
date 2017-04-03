@@ -36,6 +36,7 @@ module YinxSt
 
     def last_n_days n
       batches = Batches.new(n + 1)
+      duration = "最近#{n}日"
 
       time_line = batches.time_line
 
@@ -50,20 +51,77 @@ module YinxSt
       changed_tags = all.select &:changed_tags?
 
       @chart = MyChartkick.sample do |s|
-        s.my_line_chart all, x: :dump_day, min: 2400, asc: :key, last: n, id: '1'
+        s.my_line_chart all,
+          title: "#{duration}总数变化",
+          x: :dump_day,
+          min: 2400,
+          asc: :key,
+          last: n
 
-        s.my_line_chart changed_content, x: :dump_day, y: :status, keys: time_line, asc: :key, last: n, id: '2'
-        s.my_line_chart moved_book, x: :dump_day, keys: time_line, asc: :key, last: n, id: '3'
-        s.my_line_chart changed_tags, x: :dump_day, keys: time_line, asc: :key, last: n, id: '4'
+        s.my_line_chart changed_content,
+          title: "#{duration}新建/修改/删除",
+          x: :dump_day, y: :status,
+          keys: time_line,
+          asc: :key,
+          last: n
 
-        s.my_column_chart yesterday, x: :stack_book, desc: :count, first: 10, id: '5'
-        s.my_line_chart all, x: :dump_day, y: :stack_book, asc: :key, height: '540px', last: n, id: '6'
-        s.my_column_chart yesterday, x: :stack_name, desc: :count, first: 10, id: '7'
-        s.my_line_chart all, x: :dump_day, y: :stack_name, asc: :key, last: n, id: '8'
+        s.my_line_chart moved_book,
+          title: "#{duration}移动笔记本",
+          x: :dump_day,
+          keys: time_line,
+          asc: :key,
+          last: n
 
-        s.my_pie_chart yesterday_unwind_tags, x: :tags, desc: :count, first: 15, id: '9'
-        s.my_column_chart yesterday, x: :tags_count, asc: :key, id: '10'
-        s.my_line_chart unwind_tags, x: :dump_day, y: :tags, asc: :key, height: '740px', last: n, id: '11'
+        s.my_line_chart changed_tags,
+          title: "#{duration}更改标签",
+          x: :dump_day,
+          keys: time_line,
+          asc: :key,
+          last: n
+
+        s.my_column_chart yesterday,
+          title: "目前最大的10个笔记本",
+          x: :stack_book,
+          desc: :count,
+          first: 10
+
+        s.my_line_chart all,
+          title: "#{duration}笔记本体积变化",
+          x: :dump_day, y: :stack_book,
+          asc: :key,
+          height: '540px',
+          last: n
+
+        s.my_column_chart yesterday,
+          title: "目前最大的10个笔记本组",
+          x: :stack_name,
+          desc: :count,
+          first: 10
+
+        s.my_line_chart all,
+          title: "#{duration}笔记本组体积变化",
+          x: :dump_day, y: :stack_name,
+          asc: :key,
+          last: n
+
+        s.my_pie_chart yesterday_unwind_tags,
+          title: "目前使用最多的15个标签",
+          x: :tags,
+          desc: :count,
+          first: 15
+
+        s.my_column_chart yesterday,
+          title: "目前每篇笔记的标签数",
+          x: :tags_count,
+          asc: :key
+
+        s.my_line_chart unwind_tags,
+          title: "#{duration}标签数变化",
+          x: :dump_day, y: :tags,
+          asc: :key,
+          height: '740px',
+          last: n
+
       end
 
       self
