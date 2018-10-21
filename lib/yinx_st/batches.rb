@@ -3,19 +3,21 @@ require 'yinx_sql/json_batch'
 
 module YinxSt
   class Batches
-    attr_reader :all_notes
+    attr_reader :all_notes, :smallest_batch_size
 
     def initialize n
       batches = Yinx::SQL::JsonBatch.last(n)
-      @all_notes = batches.map do |b|
-        b.batch.map do |h|
+      @smallest_batch_size = Float::INFINITY
+      @all_notes = batches.each_with_object([]) do |b, rs|
+        @smallest_batch_size = b.batch.size if b.batch.size < @smallest_batch_size
+        b.batch.each_with_object(rs) do |h, rs|
           n = Yinx::NoteMeta.from_h h
           n.dump_id = b.id
           n.dump_at = (b.fixed_dump_date or b.created_at)
           n.batches = self
-          n
+          rs << n
         end
-      end.flatten
+      end
     end
 
     def of_guid guid

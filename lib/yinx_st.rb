@@ -38,7 +38,7 @@ module YinxSt
         s.my_line_chart all,
           title: "#{duration}总数变化",
           x: :dump_day,
-          min: 2400,
+          min: batches.smallest_batch_size.floor(-1),
           asc: :key,
           last: n
 
